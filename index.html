@@ -398,10 +398,25 @@
             showInter();
         };
 
+        // --- 追加: ボタンを一時的に無効化する関数 ---
+        function disableButtonTemporary(btn) {
+            if (!btn) return;
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'pointer-events-none');
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'pointer-events-none');
+            }, 2000);
+        }
+        // ------------------------------------------
+
         function showInter() {
             const mId = routeSteps[currentStepIndex];
             document.getElementById('inter-desc').innerHTML = `次は <b>モード ${mId}</b> です。<br><span class="text-slate-400 text-sm uppercase">(${modes[mId].label})</span><br><br>30秒間のプレイを開始します。`;
             switchScreen('inter');
+
+            // 追加: STARTボタンを2秒間無効化
+            disableButtonTemporary(document.querySelector('#screen-inter button'));
         }
 
         window.launchMode = () => { setupGame(routeSteps[currentStepIndex]); switchScreen('game'); };
@@ -460,6 +475,9 @@
                 container.innerHTML += `<div class="flex justify-between items-center bg-white p-5 rounded-2xl border-2 border-slate-100 shadow-sm"><div class="flex flex-col text-left"><span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${idx + 1}回目</span><span class="font-black text-slate-800 text-lg">モード ${m}</span></div><div class="text-right"><span class="text-4xl font-black text-slate-900">${sessionData.scores[m] || 0}</span><span class="text-xs font-black text-slate-400 ml-1">pts</span></div></div>`;
             });
             switchScreen('resultsSummary');
+
+            // 追加: アンケートに進むボタンを2秒間無効化
+            disableButtonTemporary(document.querySelector('#screen-game-results button'));
         }
 
         window.showPostSurvey = () => {
@@ -487,7 +505,7 @@
             });
             const isA = userRoute === 'A';
             const q7label = document.getElementById('q7-label');
-            q7label.textContent = isA ? "Q7. 要素追加によりおもしろさは増加しましたか？" : "Q7. 要素削減によりおもしろさは減少しましたか？";
+            q7label.textContent = isA ? "Q7. 要素追加によりおもしろさは増加しましたか？（1：変わらない～5：増加した）" : "Q7. 要素削減によりおもしろさは減少しましたか？（1：変わらない～5：減少した）";
             const q7cont = document.getElementById('q7-container'); q7cont.innerHTML = '';
             const pairs = isA ? 
                 [{f:1,t:2,l:"グラフィック追加"},{f:2,t:3,l:"エフェクト追加"},{f:3,t:4,l:"サウンド追加"}] : 
